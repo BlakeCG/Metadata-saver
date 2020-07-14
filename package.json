@@ -1,0 +1,21 @@
+{
+  "name": "adr",
+  "description": "Using NodeJS and a package called icecast-parser were going to try and get Meta data from ADR.FM's Escape stream.",
+  "version": "1.0.0",
+  "main": "index.js",
+  "engines": {
+    "node": "8.1.1",
+    "npm": "5.0.3"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "icecast-parser": "^3.2.1",
+    "time-stamp": "^2.2.0"
+  }
+}
