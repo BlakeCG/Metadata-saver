@@ -65,6 +65,16 @@ radioStation.on('metadata', function (metadata) {
   // Then compare it to currentlyplaying.nowPlaying
   // If they are the same do nothing.
   // If they are different run the save function.
+  // TODO: Keeping this single threaded won't scale +bug
+  // fs.readFile('history.json', (err, fileData) => {
+  //   console.log(err);
+  //   let songCheck = [];
+  //   songCheck = JSON.parse(fileData);
+  //   // songCheck = JSON.stringify(fileContent);
+  //   songCheck.push(fileContent);
+  //   console.log(songCheck);
+  // });
+
   save(currentlyPlaying);
 });
 
