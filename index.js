@@ -29,11 +29,17 @@ const radioStation = new Parser({
 function save(songContent) {
   fs.readFile('history.json', (err, fileContent) => {
     console.log(err);
-    let songHistory = [];
+    let songHistory = []; // readying up a empty array.
     if (!err) {
-      songHistory = JSON.parse(fileContent); //now it an object
+      // songContent is an object with data from the most recently played song.
+      // If History.json exists it will open it then save it's data in songHistory
+      // it will then Parse it to be able to add new data.
+      songHistory = JSON.parse(fileContent);
     }
-    songHistory.push(songContent); //add some data
+
+    songHistory.push(songContent);
+    // If songHistory.Json has items/objects already inside the JSON file
+    // It will add the new data from songContent to the end of the array of songHistory
 
     fs.writeFile(
       'history.json',
@@ -54,11 +60,11 @@ radioStation.on('metadata', function (metadata) {
   currentlyPlaying.flavorText = 'is playing on Ascendance Radio';
   currentlyPlaying.date = currentDate();
   currentlyPlaying.time = currentTime();
-// Now use fs.readfile to read history.json. Store the file contents into a array.
-// Read the last element in the array and store it as a variable.
-// Then compare it to currentlyplaying.nowPlaying
-// If they are the same do nothing.
-// If they are different run the save function.
+  // Now use fs.readfile to read history.json. Store the file contents into a array.
+  // Read the last element in the array and store it as a variable.
+  // Then compare it to currentlyplaying.nowPlaying
+  // If they are the same do nothing.
+  // If they are different run the save function.
   save(currentlyPlaying);
 });
 
