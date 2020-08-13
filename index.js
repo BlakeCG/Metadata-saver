@@ -23,12 +23,12 @@ const radioStation = new Parser({
   autoUpdate: true, // update metadata after interval
   errorInterval: 10 * 60, // retry connection after 10 minutes
   emptyInterval: 5 * 60, // retry get metadata after 5 minutes
-  metadataInterval: 30, // update metadata after 10 seconds
+  metadataInterval: 30, // update metadata after 30 seconds
 });
 
 function save(songContent) {
   fs.readFile('history.json', (err, fileContent) => {
-    console.log(err);
+    console.log('readfile error', err);
     let songHistory = []; // readying up a empty array.
     if (!err) {
       // songContent is an object with data from the most recently played song.
@@ -36,11 +36,9 @@ function save(songContent) {
       // it will then Parse it to be able to add new data.
       songHistory = JSON.parse(fileContent);
     }
-
     songHistory.push(songContent);
     // If songHistory.Json has items/objects already inside the JSON file
     // It will add the new data from songContent to the end of the array of songHistory
-
     fs.writeFile(
       'history.json',
       JSON.stringify(songHistory, null, 2),
@@ -66,16 +64,23 @@ radioStation.on('metadata', function (metadata) {
   // If they are the same do nothing.
   // If they are different run the save function.
   // TODO: Keeping this single threaded won't scale +bug
-  // fs.readFile('history.json', (err, fileData) => {
-  //   console.log(err);
-  //   let songCheck = [];
-  //   songCheck = JSON.parse(fileData);
-  //   // songCheck = JSON.stringify(fileContent);
-  //   songCheck.push(fileContent);
-  //   console.log(songCheck);
-  // });
+  fs.readFile('history.json', (err, fileData) => {
+    console.log(err);
 
-  save(currentlyPlaying);
+    let songCheck = [];
+    let duplicateCheck = {};
+
+    songCheck = JSON.parse(fileData);
+    if (songCheck === undefined || songCheck.length === 0) {
+      save(currentlyPlaying);
+    } else {
+      duplicateCheck = songCheck[songCheck.length - 1];
+
+      if (duplicateCheck.nowPlaying !== currentlyPlaying.nowPlaying) {
+        save(currentlyPlaying);
+      }
+    }
+  });
 });
 
 // Route to display object

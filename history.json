@@ -1,1 +1,20 @@
-{}
+[
+  {
+    "nowPlaying": "Peking Duk - Wasted",
+    "flavorText": "is playing on Ascendance Radio",
+    "date": "2020-08-11",
+    "time": "18:40:09"
+  },
+  {
+    "nowPlaying": "EDX ft. Jess Ball - I Found You (Neptune)",
+    "flavorText": "is playing on Ascendance Radio",
+    "date": "2020-08-11",
+    "time": "18:41:39"
+  },
+  {
+    "nowPlaying": "Blue Boy - Remember Me (Franky Rizardo Radio Edit)",
+    "flavorText": "is playing on Ascendance Radio",
+    "date": "2020-08-11",
+    "time": "18:44:10"
+  }
+]
