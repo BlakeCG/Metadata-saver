@@ -29,23 +29,33 @@ const radioStation = new Parser({
 function save(songContent) {
   fs.readFile('history.json', (err, fileContent) => {
     console.log('readfile error', err);
+
     let songHistory = []; // readying up a empty array.
+    let lastSongInHistory = {};
+
     if (!err) {
       // songContent is an object with data from the most recently played song.
       // If History.json exists it will open it then save it's data in songHistory
       // it will then Parse it to be able to add new data.
       songHistory = JSON.parse(fileContent);
     }
-    songHistory.push(songContent);
-    // If songHistory.Json has items/objects already inside the JSON file
-    // It will add the new data from songContent to the end of the array of songHistory
-    fs.writeFile(
-      'history.json',
-      JSON.stringify(songHistory, null, 2),
-      (err) => {
-        console.log(err);
-      }
-    );
+    lastSongInHistory = songHistory[songHistory.length - 1];
+
+    if (lastSongInHistory.nowPlaying !== songContent.nowPlaying) {
+      songHistory.push(songContent);
+      // If songHistory.Json has items/objects already inside the JSON file
+      // It will add the new data from songContent to the end of the array of songHistory
+      fs.writeFile(
+        'history.json',
+        JSON.stringify(songHistory, null, 2),
+        (err) => {
+          console.log(err);
+        }
+      );
+    }
+    // if
+    // Last song played != last song in file.
+    // Run line 51.
   });
 }
 
@@ -64,23 +74,26 @@ radioStation.on('metadata', function (metadata) {
   // If they are the same do nothing.
   // If they are different run the save function.
   // TODO: Keeping this single threaded won't scale +bug
-  fs.readFile('history.json', (err, fileData) => {
-    console.log(err);
 
-    let songCheck = [];
-    let duplicateCheck = {};
+  save(currentlyPlaying);
 
-    songCheck = JSON.parse(fileData);
-    if (songCheck === undefined || songCheck.length === 0) {
-      save(currentlyPlaying);
-    } else {
-      duplicateCheck = songCheck[songCheck.length - 1];
+  // fs.readFile('history.json', (err, fileData) => {
+  //   console.log(err);
 
-      if (duplicateCheck.nowPlaying !== currentlyPlaying.nowPlaying) {
-        save(currentlyPlaying);
-      }
-    }
-  });
+  //   let songCheck = [];
+  //   let duplicateCheck = {};
+
+  //   songCheck = JSON.parse(fileData);
+  //   if (songCheck === undefined || songCheck.length === 0) {
+  //     save(currentlyPlaying);
+  //   } else {
+  //     duplicateCheck = songCheck[songCheck.length - 1];
+
+  //     if (duplicateCheck.nowPlaying !== currentlyPlaying.nowPlaying) {
+  //       save(currentlyPlaying);
+  //     }
+  //   }
+  // });
 });
 
 // Route to display object
