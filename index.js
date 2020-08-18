@@ -23,31 +23,39 @@ const radioStation = new Parser({
   autoUpdate: true, // update metadata after interval
   errorInterval: 10 * 60, // retry connection after 10 minutes
   emptyInterval: 5 * 60, // retry get metadata after 5 minutes
-  metadataInterval: 30, // update metadata after 10 seconds
+  metadataInterval: 30, // update metadata after 30 seconds
 });
 
 function save(songContent) {
   fs.readFile('history.json', (err, fileContent) => {
-    console.log(err);
+    console.log('readfile error', err);
+
     let songHistory = []; // readying up a empty array.
+    let lastSongInHistory = {};
+
     if (!err) {
       // songContent is an object with data from the most recently played song.
       // If History.json exists it will open it then save it's data in songHistory
       // it will then Parse it to be able to add new data.
       songHistory = JSON.parse(fileContent);
     }
+    lastSongInHistory = songHistory[songHistory.length - 1];
 
-    songHistory.push(songContent);
-    // If songHistory.Json has items/objects already inside the JSON file
-    // It will add the new data from songContent to the end of the array of songHistory
-
-    fs.writeFile(
-      'history.json',
-      JSON.stringify(songHistory, null, 2),
-      (err) => {
-        console.log(err);
-      }
-    );
+    if (lastSongInHistory.nowPlaying !== songContent.nowPlaying) {
+      songHistory.push(songContent);
+      // If songHistory.Json has items/objects already inside the JSON file
+      // It will add the new data from songContent to the end of the array of songHistory
+      fs.writeFile(
+        'history.json',
+        JSON.stringify(songHistory, null, 2),
+        (err) => {
+          console.log(err);
+        }
+      );
+    }
+    // if
+    // Last song played != last song in file.
+    // Run line 51.
   });
 }
 
@@ -57,7 +65,7 @@ radioStation.on('metadata', function (metadata) {
     return metadata.StreamTitle;
   };
   currentlyPlaying.nowPlaying = currentSong();
-  currentlyPlaying.flavorText = 'is playing on Ascendance Radio';
+  // currentlyPlaying.flavorText = 'is playing on Ascendance Radio';
   currentlyPlaying.date = currentDate();
   currentlyPlaying.time = currentTime();
   // Now use fs.readfile to read history.json. Store the file contents into a array.
@@ -66,16 +74,26 @@ radioStation.on('metadata', function (metadata) {
   // If they are the same do nothing.
   // If they are different run the save function.
   // TODO: Keeping this single threaded won't scale +bug
-  // fs.readFile('history.json', (err, fileData) => {
-  //   console.log(err);
-  //   let songCheck = [];
-  //   songCheck = JSON.parse(fileData);
-  //   // songCheck = JSON.stringify(fileContent);
-  //   songCheck.push(fileContent);
-  //   console.log(songCheck);
-  // });
 
   save(currentlyPlaying);
+
+  // fs.readFile('history.json', (err, fileData) => {
+  //   console.log(err);
+
+  //   let songCheck = [];
+  //   let duplicateCheck = {};
+
+  //   songCheck = JSON.parse(fileData);
+  //   if (songCheck === undefined || songCheck.length === 0) {
+  //     save(currentlyPlaying);
+  //   } else {
+  //     duplicateCheck = songCheck[songCheck.length - 1];
+
+  //     if (duplicateCheck.nowPlaying !== currentlyPlaying.nowPlaying) {
+  //       save(currentlyPlaying);
+  //     }
+  //   }
+  // });
 });
 
 // Route to display object
