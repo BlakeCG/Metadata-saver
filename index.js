@@ -65,7 +65,7 @@ radioStation.on('metadata', function (metadata) {
     return metadata.StreamTitle;
   };
   currentlyPlaying.nowPlaying = currentSong();
-  currentlyPlaying.flavorText = 'is playing on Ascendance Radio';
+  // currentlyPlaying.flavorText = 'is playing on Ascendance Radio';
   currentlyPlaying.date = currentDate();
   currentlyPlaying.time = currentTime();
   // Now use fs.readfile to read history.json. Store the file contents into a array.
