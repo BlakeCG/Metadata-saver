@@ -2,6 +2,7 @@ const express = require('express');
 const Parser = require('icecast-parser');
 const timestamp = require('time-stamp');
 const url = require('./config/url');
+const db = require('./config/database');
 const fs = require('fs');
 const app = express();
 let currentlyPlaying = {};
@@ -15,6 +16,14 @@ let currentTime = function getTime() {
   return timestamp('HH:mm:ss');
 };
 
+// DataBase Excution
+// db.execute('SELECT * FROM SongHistory')
+//   .then((result) => {
+//     console.log(result);
+//   })
+//   .catch((err) => {
+//     console.log(err);
+//   });
 // MetaData setup
 const radioStation = new Parser({
   url: url.ADRescape, // URL to radio station
@@ -45,13 +54,25 @@ function save(songContent) {
       songHistory.push(songContent);
       // If songHistory.Json has items/objects already inside the JSON file
       // It will add the new data from songContent to the end of the array of songHistory
-      fs.writeFile(
-        'history.json',
-        JSON.stringify(songHistory, null, 2),
-        (err) => {
+
+      db.execute(
+        'INSERT INTO SongHistory (songtitle, date, time) VALUES (?, ?, ?)',
+        [songContent.nowPlaying, songContent.date, songContent.time]
+      )
+        .then((result) => {
+          console.log(result);
+        })
+        .catch((err) => {
           console.log(err);
-        }
-      );
+        });
+
+      // fs.writeFile(
+      //   'history.json',
+      //   JSON.stringify(songHistory, null, 2),
+      //   (err) => {
+      //     console.log(err);
+      //   }
+      // );
     }
     // if
     // Last song played != last song in file.
@@ -76,24 +97,6 @@ radioStation.on('metadata', function (metadata) {
   // TODO: Keeping this single threaded won't scale +bug
 
   save(currentlyPlaying);
-
-  // fs.readFile('history.json', (err, fileData) => {
-  //   console.log(err);
-
-  //   let songCheck = [];
-  //   let duplicateCheck = {};
-
-  //   songCheck = JSON.parse(fileData);
-  //   if (songCheck === undefined || songCheck.length === 0) {
-  //     save(currentlyPlaying);
-  //   } else {
-  //     duplicateCheck = songCheck[songCheck.length - 1];
-
-  //     if (duplicateCheck.nowPlaying !== currentlyPlaying.nowPlaying) {
-  //       save(currentlyPlaying);
-  //     }
-  //   }
-  // });
 });
 
 // Route to display object
