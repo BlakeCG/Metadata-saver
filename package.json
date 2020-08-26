@@ -16,6 +16,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "icecast-parser": "^3.2.1",
+    "mysql2": "^2.1.0",
     "time-stamp": "^2.2.0"
   }
 }
